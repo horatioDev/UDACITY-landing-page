@@ -1,3 +1,5 @@
+
+
 /**
  * 
  * Manipulating the DOM exercise.
@@ -55,15 +57,12 @@ function generateNavItem(item) {
 };
 
 // Top of view
-function isTopViewport(element) {
- const rect = element.getBoundingClientRect();
- if(rect.top == 0 && rect.bottom <= rect.height) return rect;
-};
-
-// Scrolling
-function isScrolling(element) {
+function isVisible(element) {
   const rect = element.getBoundingClientRect();
-  if(rect.top >= 0 && rect.bottom >= rect.height) return rect;
+  //  Deconstruct object to get top and bottom values
+  const { top, bottom } = rect;
+  // Return wether or not element is in viewport
+  return (top <= 150 && bottom >= 150);
 };
 
 // Smooth scroll
@@ -72,10 +71,8 @@ function smoothScroll(e) {
   e.preventDefault();
   // Get section id
   const targetId = e.target.getAttribute('href').slice(1);
-  // Get target section
-  const targetSection = document.getElementById(targetId);
   // Scroll to section
-  targetSection.scrollIntoView({behavior: 'smooth'});
+  scrollToAnchorId(targetId);
 }
 
 /**
@@ -94,44 +91,30 @@ function buildNav(arr) {
 // Add class 'active' to section when near top of viewport
 function activeSection() {
   for(const section of sections) {
-    const activeSection = isTopViewport(section);
-    if(activeSection) {
-      section.classList.add('active-section');
-    } else {
-      section.classList.remove('active-section');
-    }
+    // Current section in viewport
+    const isActive = isVisible(section)
+    // Add / remove active-section class to section in viewport
+    isActive ? section.classList.add('active-section') : section.classList.remove('active-section');
   }
 };
 
 // Scroll to anchor ID using scrollTO event
-function scrollToAnchorId() {
-  // Loop through sections to get top section in view
-  sections.forEach((section, idx) =>{
-    const rect = section.getBoundingClientRect();
-
-    // Calculate section top relative to viewport
-    const relativeSectionTop = rect.top;
-
-    // Check if section is visible
-    const isVisible = relativeSectionTop >= 0 && relativeSectionTop < window.innerHeight;
-
-    // Check if it's the last section or there's no other section below it
-    const isLastSection = idx === sections.length - 1;
-    const isNextSectionBelow = idx < sections.length - 1 && sections[idx + 1].getBoundingClientRect().top > window.innerHeight;
-
-    // If the section is partially visible or fully visible and it's the last section or there's no other section below it, scroll to the next section
-    if ((isVisible || (relativeSectionTop < 0 && rect.bottom > 0)) && (isLastSection || !isNextSectionBelow)) {
-      sections[idx].scrollIntoView({ behavior: 'smooth' });
-    }
-  })
+function scrollToAnchorId(anchorId) {
+  // Get target section
+  const targetSection = document.getElementById(anchorId);
+  // Check if target section
+  if(targetSection) {
+    // Scroll to section
+    targetSection.scrollIntoView({behavior: 'smooth'});
+  }
 }
-scrollToAnchorId()
 
 /**
  * End Main Functions
  * Begin Events
  * 
 */
+
 document.addEventListener('DOMContentLoaded', () => {
   // Build menu 
   buildNav(sections);
@@ -139,11 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Scroll to section on link click
   navList.querySelectorAll('.menu__link').forEach(link => {
     link.addEventListener('click', (e) => {
-      smoothScroll(e)
+      smoothScroll(e);
     })
   });
+
   // Set sections as active
-  document.addEventListener('scroll', () => {
+  document.addEventListener('scroll', (e) => {
+    // Prevent default behavior
+    // e.preventDefault();
     activeSection();
   })
 });
