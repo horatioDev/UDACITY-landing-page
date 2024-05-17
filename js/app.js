@@ -24,9 +24,12 @@
  * Define Global Variables
  * 
 */
+// Navigation ul
 const navList = document.getElementById('navbar__list');
+// Sections
 const sections = document.querySelectorAll('section');
-
+// Scrolling variable
+let isScrolling;
 
 /**
  * End Global Variables
@@ -75,6 +78,24 @@ function smoothScroll(e) {
   scrollToAnchorId(targetId);
 }
 
+// Hide / Show navigation bar
+function showOnScroll() {
+  // Get nav bar
+  const navbar = document.querySelector('.navbar__menu');
+
+  // Show navbar when scrolling
+  navbar.style.display = 'block';
+
+  // Clear scrolling timeout
+  window.clearTimeout(isScrolling);
+
+  // Hide navbar using timeout after two seconds
+  isScrolling = setTimeout(() => {
+    // Hide navbar
+    navbar.style.display = 'none';
+  }, 2000);
+};
+
 /**
  * End Helper Functions
  * Begin Main Functions
@@ -83,7 +104,9 @@ function smoothScroll(e) {
 
 // build the nav
 function buildNav(arr) {
+  // Loop through array and build out nav menu
   arr.forEach(item => {
+    // Generate nav list item
     generateNavItem(item);
   });
 };
@@ -131,7 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Prevent default behavior
     // e.preventDefault();
     activeSection();
-  })
+    // Hide / Show naivgation bar if user is scrolling
+    showOnScroll();
+  });
 });
 
 
