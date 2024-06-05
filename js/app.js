@@ -1,5 +1,3 @@
-
-
 /**
  * 
  * Manipulating the DOM exercise.
@@ -24,6 +22,7 @@
  * Define Global Variables
  * 
 */
+
 // Navigation ul
 const navList = document.getElementById('navbar__list');
 // Sections
